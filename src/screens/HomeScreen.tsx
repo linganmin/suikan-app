@@ -67,16 +67,18 @@ export const HomeScreen = ({navigation}: any) => {
           style={[styles.thumbnail, isLargeScreen && styles.thumbnailLarge]}
           resizeMode="cover" 
         />
-        <Text 
-          style={[styles.videoTitle, isLargeScreen && styles.videoTitleLarge]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {item.vod_name}
-        </Text>
-        <Text style={[styles.videoRemarks, isLargeScreen && styles.videoRemarksLarge]}>
-          {item.vod_remarks}
-        </Text>
+         <View style={styles.videoTextOverlay}>
+          <Text 
+            style={[styles.videoTitle, isLargeScreen && styles.videoTitleLarge]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {item.vod_name}
+          </Text>
+          <Text style={[styles.videoRemarks, isLargeScreen && styles.videoRemarksLarge]}>
+            {item.vod_remarks}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -103,7 +105,7 @@ export const HomeScreen = ({navigation}: any) => {
             <View style={styles.searchBox}>
               <TextInput
                 style={[styles.searchInput, isLargeScreen && styles.searchInputLarge]}
-                placeholder="请输入剧集/电影/综艺名"
+                placeholder="剧集/电影/综艺名"
                 value={searchText}
                 onChangeText={setSearchText}
                 onSubmitEditing={handleSearch}
@@ -115,7 +117,7 @@ export const HomeScreen = ({navigation}: any) => {
           <View style={styles.rightPanel}>
             {loading ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size={isLargeScreen ? "large" : "small"} color="#0000ff" />
+                <ActivityIndicator size={isLargeScreen ? "large" : "small"} color="#fff" />
                 <Text style={[styles.loadingText, isLargeScreen && styles.loadingTextLarge]}>
                   正在加载中...
                 </Text>
@@ -141,21 +143,37 @@ export const HomeScreen = ({navigation}: any) => {
   );
 };
 
+
+
+// 在文件顶部添加颜色常量
+const COLORS = {
+  primary: '#000',
+  secondary: '#696969',
+  text: {
+    light: '#fff',
+    gray: '#666',
+  },
+  background: {
+    light: '#f0f0f0',
+    dark: '#000',
+  },
+};
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.background.dark,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.background.dark,
   },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.background.dark,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: '#121212',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -168,9 +186,9 @@ const styles = StyleSheet.create({
   leftPanel: {
     width: 300,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.background.dark,
     borderRightWidth: 1,
-    borderRightColor: '#e0e0e0',
+    borderRightColor: COLORS.secondary,
   },
   logoContainer: {
     alignItems: 'center',
@@ -229,7 +247,7 @@ const styles = StyleSheet.create({
     padding: 4,  // 减小内边距
     fontSize: 12,  // 减小字体大小
     fontWeight: '600',
-    color: '#333',
+    color: COLORS.text.light,
     textAlign: 'center',
   },
   videoTitleLarge: {
@@ -238,7 +256,8 @@ const styles = StyleSheet.create({
   videoRemarks: {
     padding: 2,  // 减小内边距
     fontSize: 10,  // 减小字体大小
-    color: '#666',
+    color: COLORS.text.light,
+    textAlign: 'center',
   },
   videoRemarksLarge: {
     fontSize: 12,  // 大屏下的字体大小
@@ -258,6 +277,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'red',
     margin: 16,
+  },
+  videoTextOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明黑色背景
+    width: '100%',
   },
   errorTextLarge: {
     fontSize: 18,
@@ -280,7 +303,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 14,
-    color: '#666',
+    color: COLORS.text.light, 
   },
   loadingTextLarge: {
     fontSize: 18,
@@ -289,14 +312,14 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.text.light,
   },
   logoTextLarge: {
     fontSize: 30,
   },
   logoSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: COLORS.text.light,
     marginTop: 4,
   },
   spacer: {
