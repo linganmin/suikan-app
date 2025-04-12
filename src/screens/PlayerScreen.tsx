@@ -35,23 +35,41 @@ export const PlayerScreen = ({route}: any) => {
     parseEpisodes();
   }, [video]);
   
-  // 添加屏幕尺寸计算
+  // 修改屏幕尺寸计算
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
-  const isTabletOrTV = screenWidth >= 768 || Platform.isTV;
+  const isTablet = screenWidth >= 768;
+  const isTV = Platform.isTV;
   
-  const videoSize = isTabletOrTV ? {
-    width: screenWidth * 0.8,
-    height: (screenWidth * 0.8) * 9 / 16,
-  } : {
-    width: screenWidth,
-    height: screenWidth * 9 / 16,
+  // 计算视频尺寸
+  const getVideoSize = () => {
+    if (isTV) {
+      return {
+        width: screenWidth * 0.7,
+        height: (screenWidth * 0.7) * 9 / 16,
+      };
+    } else if (isTablet) {
+      return {
+        width: screenWidth * 0.8,
+        height: (screenWidth * 0.8) * 9 / 16,
+      };
+    }
+    return {
+      width: screenWidth,
+      height: screenWidth * 9 / 16,
+    };
   };
+
+  const videoSize = getVideoSize();
 
   return (
     <View style={styles.container}>
       {currentEpisode && (
-        <View style={[styles.videoWrapper, isTabletOrTV && styles.tabletVideoWrapper]}>
+        <View style={[
+          styles.videoWrapper,
+          isTablet && styles.tabletVideoWrapper,
+          isTV && styles.tvVideoWrapper
+        ]}>
           <Video
             source={{uri: currentEpisode.url}}
             style={[styles.videoPlayer, videoSize]}
@@ -94,18 +112,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    alignItems: 'center', // 添加居中
   },
   videoWrapper: {
     position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#000',
+    marginTop: 20, // 添加顶部间距
   },
   tabletVideoWrapper: {
-    paddingVertical: 20,
+    width: '80%', // 平板宽度80%
+  },
+  tvVideoWrapper: {
+    width: '70%', // TV宽度70%
+    marginTop: 40, // TV上增加更多顶部间距
   },
   videoPlayer: {
-    // 移除固定宽度和比例，现在通过 videoSize 动态设置
+    // 移除固定尺寸，使用动态计算
   },
   episodeContainer: {
     backgroundColor: '#fff',
