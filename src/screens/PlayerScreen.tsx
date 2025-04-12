@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+// 首先在顶部导入需要的组件
 import {
   View,
   StyleSheet,
@@ -6,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Text,
+  Platform,
 } from 'react-native';
 import Video from 'react-native-video';
 import {VideoItem} from '../types/video';
@@ -19,7 +21,7 @@ export const PlayerScreen = ({route}: any) => {
   const video: VideoItem = route.params.video;
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null);
-
+  
   useEffect(() => {
     const parseEpisodes = () => {
       const episodeList = video.vod_play_url.split('#').map((item, index) => ({
@@ -32,21 +34,37 @@ export const PlayerScreen = ({route}: any) => {
 
     parseEpisodes();
   }, [video]);
+  
+  // 添加屏幕尺寸计算
+  const screenWidth = Dimensions.get('window').width;
+  const screenHeight = Dimensions.get('window').height;
+  const isTabletOrTV = screenWidth >= 768 || Platform.isTV;
+  
+  const videoSize = isTabletOrTV ? {
+    width: screenWidth * 0.8,
+    height: (screenWidth * 0.8) * 9 / 16,
+  } : {
+    width: screenWidth,
+    height: screenWidth * 9 / 16,
+  };
 
   return (
     <View style={styles.container}>
       {currentEpisode && (
-        <Video
-          source={{uri: currentEpisode.url}}
-          style={styles.videoPlayer}
-          controls={true}
-          resizeMode="contain"
-        />
+        <View style={[styles.videoWrapper, isTabletOrTV && styles.tabletVideoWrapper]}>
+          <Video
+            source={{uri: currentEpisode.url}}
+            style={[styles.videoPlayer, videoSize]}
+            controls={true}
+            resizeMode="contain"
+          />
+        </View>
       )}
       
       <View style={styles.episodeContainer}>
-        <Text style={styles.episodeTitle}>选集</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 10}}>选集</Text>
+        <View style={{height: 10}} />
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.episodeList}>
             {episodes.map((episode) => (
               <TouchableOpacity
@@ -77,31 +95,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  videoWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000',
+  },
+  tabletVideoWrapper: {
+    paddingVertical: 20,
+  },
   videoPlayer: {
-    width: Dimensions.get('window').width,
-    aspectRatio: 16 / 9,
+    // 移除固定宽度和比例，现在通过 videoSize 动态设置
   },
   episodeContainer: {
     backgroundColor: '#fff',
     padding: 16,
-  },
-  episodeTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#333',
+    flex: 1,
   },
   episodeList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    width: '100%',
   },
   episodeButton: {
-    paddingHorizontal: 16,
+    width: '30%', // 每行显示3个
+    marginHorizontal: '1.5%',
     paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: '#f0f0f0',
-    marginRight: 8,
-    marginBottom: 8,
+    marginBottom: 12,
+    alignItems: 'center',
   },
   activeEpisode: {
     backgroundColor: '#007AFF',
