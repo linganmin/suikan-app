@@ -61,24 +61,21 @@ export const HomeScreen = ({navigation}: any) => {
     <TouchableOpacity
       style={[styles.videoItem, isLargeScreen && styles.videoItemLarge]}
       onPress={() => navigation.navigate('Player', {video: item})}>
-      <Image 
-        source={{uri: item.vod_pic}} 
-        style={[styles.thumbnail, isLargeScreen && styles.thumbnailLarge]}
-        resizeMode="cover" 
-      />
-      <View style={styles.videoInfo}>
-        <Text style={[styles.videoTitle, isLargeScreen && styles.videoTitleLarge]}>
+      <View style={styles.videoContent}>
+        <Image 
+          source={{uri: item.vod_pic}} 
+          style={[styles.thumbnail, isLargeScreen && styles.thumbnailLarge]}
+          resizeMode="cover" 
+        />
+        <Text 
+          style={[styles.videoTitle, isLargeScreen && styles.videoTitleLarge]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {item.vod_name}
         </Text>
         <Text style={[styles.videoRemarks, isLargeScreen && styles.videoRemarksLarge]}>
           {item.vod_remarks}
-        </Text>
-        <Text 
-          style={[styles.videoBlurb, isLargeScreen && styles.videoBlurbLarge]}
-          numberOfLines={isLargeScreen ? 3 : 2}
-          ellipsizeMode="tail"
-        >
-          {item.vod_blurb}
         </Text>
       </View>
     </TouchableOpacity>
@@ -92,42 +89,53 @@ export const HomeScreen = ({navigation}: any) => {
         translucent={true}
       />
       <View style={styles.container}>
-        <View style={[styles.header, isLargeScreen && styles.headerLarge]}>
-          <View style={styles.logoContainer}>
-            <Text style={[styles.logoText, isLargeScreen && styles.logoTextLarge]}>随看</Text>
+        <View style={styles.contentContainer}>
+          {/* 左侧区域 */}
+          <View style={styles.leftPanel}>
+            <View style={styles.logoContainer}>
+              <Text style={[styles.logoText, isLargeScreen && styles.logoTextLarge]}>随看</Text>
+              <Text style={styles.logoSubtitle}>海量影视资源</Text>
+            </View>
+            
+            {/* 增加间隔 */}
+            <View style={styles.spacer} />
+            
+            <View style={styles.searchBox}>
+              <TextInput
+                style={[styles.searchInput, isLargeScreen && styles.searchInputLarge]}
+                placeholder="请输入想看的剧集/电影/综艺..."
+                value={searchText}
+                onChangeText={setSearchText}
+                onSubmitEditing={handleSearch}
+              />
+            </View>
           </View>
-          <View style={[styles.searchContainer, isLargeScreen && styles.searchContainerLarge]}>
-            <TextInput
-              style={[styles.searchInput, isLargeScreen && styles.searchInputLarge]}
-              placeholder="请输入想看的剧集/电影/综艺..."
-              value={searchText}
-              onChangeText={setSearchText}
-              onSubmitEditing={handleSearch}
-            />
+
+          {/* 右侧结果区域 */}
+          <View style={styles.rightPanel}>
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size={isLargeScreen ? "large" : "small"} color="#0000ff" />
+                <Text style={[styles.loadingText, isLargeScreen && styles.loadingTextLarge]}>
+                  正在加载中...
+                </Text>
+              </View>
+            ) : error ? (
+              <Text style={[styles.errorText, isLargeScreen && styles.errorTextLarge]}>{error}</Text>
+            ) : videos.length === 0 ? (
+              <Text style={[styles.emptyText, isLargeScreen && styles.emptyTextLarge]}>暂无搜索结果</Text>
+            ) : (
+              <FlatList
+                data={videos}
+                renderItem={renderVideoItem}
+                keyExtractor={item => item.vod_id}
+                contentContainerStyle={styles.listContainer}
+                numColumns={3}
+                columnWrapperStyle={styles.columnWrapper}
+              />
+            )}
           </View>
         </View>
-
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size={isLargeScreen ? "large" : "small"} color="#0000ff" />
-            <Text style={[styles.loadingText, isLargeScreen && styles.loadingTextLarge]}>
-              正在加载中...
-            </Text>
-          </View>
-        ) : error ? (
-          <Text style={[styles.errorText, isLargeScreen && styles.errorTextLarge]}>{error}</Text>
-        ) : videos.length === 0 ? (
-          <Text style={[styles.emptyText, isLargeScreen && styles.emptyTextLarge]}>暂无搜索结果</Text>
-        ) : (
-          <FlatList
-            data={videos}
-            renderItem={renderVideoItem}
-            keyExtractor={item => item.vod_id}
-            contentContainerStyle={styles.listContainer}
-            numColumns={isLargeScreen ? 2 : 1}
-            key={isLargeScreen ? 'grid' : 'list'}
-          />
-        )}
       </View>
     </SafeAreaView>
   );
@@ -146,38 +154,37 @@ const styles = StyleSheet.create({
   header: {
     padding: 16,
     backgroundColor: '#fff',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  headerLarge: {
-    padding: 24,
+  contentContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  leftPanel: {
+    width: 300,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRightWidth: 1,
+    borderRightColor: '#e0e0e0',
   },
   logoContainer: {
     alignItems: 'center',
+    marginBottom: 24,
+    paddingTop: 16, // 增加顶部内边距
+  },
+  rightPanel: {
+    flex: 1,
+    padding: 16,
+  },
+  searchBox: {
     marginBottom: 16,
   },
-  logoText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-  },
-  logoTextLarge: {
-    fontSize: 40,
-    marginBottom: 8,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-  },
-  searchContainerLarge: {
-    maxWidth: '70%',
-    alignSelf: 'center',
-  },
   searchInput: {
-    flex: 1,
     height: 40,
     backgroundColor: '#f0f0f0',
     borderRadius: 20,
@@ -190,49 +197,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   listContainer: {
-    padding: 16,
+    padding: 8,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    gap: 12,
   },
   videoItem: {
-    flexDirection: 'row',
+    flex: 1,
+    maxWidth: '32%',
     backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 12,
     overflow: 'hidden',
-    height: 160,
   },
   videoItemLarge: {
-    height: 200,
-    margin: 8,
+    maxWidth: '32%',
+  },
+  videoContent: {
     flex: 1,
+    alignItems: 'center',
   },
   thumbnail: {
-    width: 90,
-    height: 160,
+    width: '100%',
+    height: 160,  // 固定高度
   },
   thumbnailLarge: {
-    width: 120,
-    height: 200,
-  },
-  videoInfo: {
-    flex: 1,
-    padding: 12,
+    height: 180,  // 大屏下的高度
   },
   videoTitle: {
-    fontSize: 16,
+    width: '100%',
+    padding: 4,  // 减小内边距
+    fontSize: 12,  // 减小字体大小
     fontWeight: '600',
     color: '#333',
+    textAlign: 'center',
   },
   videoTitleLarge: {
-    fontSize: 20,
+    fontSize: 14,  // 大屏下的字体大小
   },
   videoRemarks: {
-    fontSize: 14,
+    padding: 2,  // 减小内边距
+    fontSize: 10,  // 减小字体大小
     color: '#666',
-    marginTop: 4,
   },
   videoRemarksLarge: {
-    fontSize: 16,
-    marginTop: 8,
+    fontSize: 12,  // 大屏下的字体大小
   },
   videoBlurb: {
     fontSize: 12,
@@ -276,5 +286,21 @@ const styles = StyleSheet.create({
   loadingTextLarge: {
     fontSize: 18,
     marginTop: 16,
+  },
+  logoText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  logoTextLarge: {
+    fontSize: 30,
+  },
+  logoSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  spacer: {
+    height: 20, // 间隔高度
   },
 });

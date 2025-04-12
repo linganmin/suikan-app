@@ -96,6 +96,7 @@ export const PlayerScreen = ({route, navigation}: any) => {
         
         {/* 右侧选集区域 */}
         <View style={styles.episodeContainer}>
+          <Text style={styles.videoTitle}>{video.vod_name}</Text>
           <Text style={styles.episodeTitle}>选集</Text>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.episodeList}>
@@ -195,5 +196,16 @@ const styles = StyleSheet.create({
   },
   activeEpisodeText: {
     fontWeight: 'bold',
+  },
+  videoTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  currentEpisode: {
+    fontSize: 16,
+    color: '#999',
+    marginBottom: 16,
   },
 });
