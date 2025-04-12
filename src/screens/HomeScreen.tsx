@@ -103,7 +103,7 @@ export const HomeScreen = ({navigation}: any) => {
             <View style={styles.searchBox}>
               <TextInput
                 style={[styles.searchInput, isLargeScreen && styles.searchInputLarge]}
-                placeholder="请输入想看的剧集/电影/综艺..."
+                placeholder="请输入剧集/电影/综艺名"
                 value={searchText}
                 onChangeText={setSearchText}
                 onSubmitEditing={handleSearch}
@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
   searchInputLarge: {
     height: 50,
     fontSize: 18,
-    paddingHorizontal: 24,
   },
   listContainer: {
     padding: 8,
