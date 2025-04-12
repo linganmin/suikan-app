@@ -22,13 +22,7 @@ const App = () => {
         <Stack.Screen 
           name="Player" 
           component={PlayerScreen}
-          options={{
-            title: '正在播放',
-            headerStyle: {
-              backgroundColor: '#f5f5f5',
-            },
-            headerTintColor: '#333',
-          }}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
