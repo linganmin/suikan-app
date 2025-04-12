@@ -4,6 +4,7 @@ export interface VideoItem {
   vod_pic: string;
   vod_play_url: string;
   vod_remarks: string;
+  vod_blurb: string;
 }
 
 export interface SearchResponse {
