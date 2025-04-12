@@ -21,6 +21,10 @@ export const PlayerScreen = ({route, navigation}: any) => {
   const video: VideoItem = route.params.video;
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null);
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
+  
+  const speedOptions = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
   
   useEffect(() => {
     // 隐藏状态栏以获得更好的全屏体验
@@ -51,19 +55,8 @@ export const PlayerScreen = ({route, navigation}: any) => {
   
   // 计算视频尺寸 - 横屏布局
   const getVideoSize = () => {
-    if (isTV) {
-      return {
-        width: screenWidth * 0.7,
-        height: screenHeight * 0.8,
-      };
-    } else if (isTablet) {
-      return {
-        width: screenWidth * 0.65,
-        height: screenHeight * 0.8,
-      };
-    }
     return {
-      width: screenWidth * 0.65,
+      width: screenWidth * 0.6,
       height: screenHeight * 0.8,
     };
   };
@@ -85,12 +78,45 @@ export const PlayerScreen = ({route, navigation}: any) => {
               style={[styles.videoPlayer, videoSize]}
               controls={true}
               resizeMode="contain"
+              rate={playbackSpeed}
             />
             <TouchableOpacity 
               style={styles.backButton}
               onPress={() => navigation.goBack()}>
               <Text style={styles.backButtonText}>返回</Text>
             </TouchableOpacity>
+            
+            {/* 设置按钮和倍速菜单 */}
+            <TouchableOpacity 
+              style={styles.settingsButton}
+              onPress={() => setShowSpeedMenu(!showSpeedMenu)}>
+              <Text style={styles.settingsButtonText}>倍速</Text>
+            </TouchableOpacity>
+            
+            {showSpeedMenu && (
+              <View style={styles.speedMenu}>
+                <Text style={styles.speedMenuTitle}>播放速度</Text>
+                {speedOptions.map((speed) => (
+                  <TouchableOpacity
+                    key={speed}
+                    style={[
+                      styles.speedOption,
+                      playbackSpeed === speed && styles.activeSpeedOption,
+                    ]}
+                    onPress={() => {
+                      setPlaybackSpeed(speed);
+                      setShowSpeedMenu(false);
+                    }}>
+                    <Text style={[
+                      styles.speedOptionText,
+                      playbackSpeed === speed && styles.activeSpeedOptionText,
+                    ]}>
+                      {speed}x
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
         )}
         
@@ -207,5 +233,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
     marginBottom: 16,
+  },
+  settingsButton: {
+    position: 'absolute',
+    bottom: 100,
+    right: 20,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  settingsButtonText: {
+    color: '#fff',
+    fontSize: 14,  // 调整字体大小以匹配返回按钮
+  },
+  speedMenu: {
+    position: 'absolute',
+    top: 70,  // 相应调整菜单位置
+    right: 20,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    padding: 10,
+    borderRadius: 10,
+    width: 120,
+  },
+  speedMenuTitle: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  speedOption: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    marginVertical: 2,
+  },
+  activeSpeedOption: {
+    backgroundColor: '#007AFF',
+  },
+  speedOptionText: {
+    color: '#fff',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  activeSpeedOptionText: {
+    fontWeight: 'bold',
   },
 });
